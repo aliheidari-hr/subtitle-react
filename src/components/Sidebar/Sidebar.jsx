@@ -15,7 +15,7 @@ const Sidebar = memo(() => {
             <div className={`sidebar transition-all duration-300 overflow-hidden fixed lg:sticky top-0 -left-[260px] lg:left-auto bg-[#161b22] flex py-2 px-2 flex-col z-[3000] w-[250px] min-w-[250px] max-w-[250px] h-full min-h-[100vh] max-h-[100vh] ${isOpenSidbar ? 'left-[0] lg:-ml-[250px]' : ''}`}>
                 <div className='flex justify-between items-center h-[35px] px-1 pt-3'>
                     <div className='flex items-center gap-2 pl-2'>
-                        <img className='w-full max-w-[35px]' src="/assets/images/logo.svg" alt="Subtitle Tools" />
+                        <img className='w-full max-w-[35px]' src="assets/images/logo.svg" alt="Subtitle Tools" />
 
                         <span className='text-zinc-300 text-[14px]'>Subtitle Tools</span>
                     </div>
