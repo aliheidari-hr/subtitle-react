@@ -1,0 +1,944 @@
+1
+00:00:01,140 --> 00:00:02,460
+So, I have mentioned
+
+2
+00:00:02,460 --> 00:00:06,330
+the use effect dependency array a few times already,
+
+3
+00:00:06,330 --> 00:00:09,000
+but we don't know yet what it actually does
+
+4
+00:00:09,000 --> 00:00:10,770
+and how it works.
+
+5
+00:00:10,770 --> 00:00:13,893
+So, let's change that in this lecture.
+
+6
+00:00:15,570 --> 00:00:19,050
+So, as we saw at the beginning of this section,
+
+7
+00:00:19,050 --> 00:00:24,030
+by default in effect will run after each and every render.
+
+8
+00:00:24,030 --> 00:00:27,750
+However, that's almost never what we want.
+
+9
+00:00:27,750 --> 00:00:29,220
+But, the good news is
+
+10
+00:00:29,220 --> 00:00:31,860
+that we can change this default behavior
+
+11
+00:00:31,860 --> 00:00:35,640
+by passing a dependency array into the useEffect hook
+
+12
+00:00:35,640 --> 00:00:38,070
+as a second argument,
+
+13
+00:00:38,070 --> 00:00:41,220
+but why does use effect actually need
+
+14
+00:00:41,220 --> 00:00:44,970
+an array of dependencies, you might ask?
+
+15
+00:00:44,970 --> 00:00:48,450
+Well, the reason is that without this array,
+
+16
+00:00:48,450 --> 00:00:52,410
+React doesn't know when to actually run the effect.
+
+17
+00:00:52,410 --> 00:00:56,070
+But, if we do specify the effect dependencies
+
+18
+00:00:56,070 --> 00:00:58,650
+by passing in the dependency array,
+
+19
+00:00:58,650 --> 00:01:01,350
+the effect will be executed each time
+
+20
+00:01:01,350 --> 00:01:04,319
+that one of the dependencies changes.
+
+21
+00:01:04,319 --> 00:01:07,500
+And, we will come back to why this is so amazing
+
+22
+00:01:07,500 --> 00:01:09,330
+in the next slide.
+
+23
+00:01:09,330 --> 00:01:12,300
+But, for now, this is all you need to know.
+
+24
+00:01:12,300 --> 00:01:16,440
+Now, what exactly are those dependencies?
+
+25
+00:01:16,440 --> 00:01:19,830
+Well, effect dependencies are state variables
+
+26
+00:01:19,830 --> 00:01:23,790
+and props that are used inside the effect.
+
+27
+00:01:23,790 --> 00:01:25,710
+And, the rule is that each
+
+28
+00:01:25,710 --> 00:01:28,890
+and every one of those state variables and props
+
+29
+00:01:28,890 --> 00:01:32,430
+must be included in the dependency array.
+
+30
+00:01:32,430 --> 00:01:34,920
+But, let's take a look at an example
+
+31
+00:01:34,920 --> 00:01:37,470
+to understand what I'm talking about.
+
+32
+00:01:37,470 --> 00:01:40,380
+And, the code here is really not important.
+
+33
+00:01:40,380 --> 00:01:44,580
+What matters is that the effect uses the title prop
+
+34
+00:01:44,580 --> 00:01:47,130
+and the user rating state.
+
+35
+00:01:47,130 --> 00:01:50,160
+We can clearly see at the top of the code
+
+36
+00:01:50,160 --> 00:01:52,500
+that title is indeed a prop
+
+37
+00:01:52,500 --> 00:01:56,580
+and that user rating is indeed a APs of state.
+
+38
+00:01:56,580 --> 00:01:59,490
+Therefore, both of them must be included
+
+39
+00:01:59,490 --> 00:02:01,560
+in the dependency array.
+
+40
+00:02:01,560 --> 00:02:04,980
+So, the effect function depends on these variables
+
+41
+00:02:04,980 --> 00:02:06,420
+to do its work,
+
+42
+00:02:06,420 --> 00:02:09,930
+and therefore we need to tell React about them.
+
+43
+00:02:09,930 --> 00:02:13,590
+Otherwise, if the title or the user rating changes,
+
+44
+00:02:13,590 --> 00:02:16,680
+React will not know about this change,
+
+45
+00:02:16,680 --> 00:02:20,100
+and, therefore, it won't be able to re-execute
+
+46
+00:02:20,100 --> 00:02:21,540
+the effect code.
+
+47
+00:02:21,540 --> 00:02:25,800
+And, this will then lead to a bug called stale closure.
+
+48
+00:02:25,800 --> 00:02:28,860
+And, we will talk about what a stale closure is
+
+49
+00:02:28,860 --> 00:02:32,580
+and also about some more rules for the dependency array
+
+50
+00:02:32,580 --> 00:02:35,190
+in a later more advanced section.
+
+51
+00:02:35,190 --> 00:02:37,470
+But, for now, let's actually understand
+
+52
+00:02:37,470 --> 00:02:40,440
+why the dependency array is so important
+
+53
+00:02:40,440 --> 00:02:42,063
+for the useEffect hook.
+
+54
+00:02:43,677 --> 00:02:46,440
+So, I like to think of the useEffect hook
+
+55
+00:02:46,440 --> 00:02:49,350
+as an event listener that is listening
+
+56
+00:02:49,350 --> 00:02:52,800
+for one or more dependencies to change.
+
+57
+00:02:52,800 --> 00:02:56,010
+And, when one of the dependencies does change,
+
+58
+00:02:56,010 --> 00:02:59,850
+use effect will simply execute the effect again.
+
+59
+00:02:59,850 --> 00:03:02,580
+So, a bit like a regular event listener,
+
+60
+00:03:02,580 --> 00:03:04,650
+but for effects.
+
+61
+00:03:04,650 --> 00:03:07,320
+But, let's go back to our previous example
+
+62
+00:03:07,320 --> 00:03:10,950
+where we had the title and user rating dependencies
+
+63
+00:03:10,950 --> 00:03:11,973
+in the array.
+
+64
+00:03:12,810 --> 00:03:16,620
+So, whenever the title or the user rating changes,
+
+65
+00:03:16,620 --> 00:03:19,620
+React will execute the effect again.
+
+66
+00:03:19,620 --> 00:03:22,560
+So, it will run the code one more time,
+
+67
+00:03:22,560 --> 00:03:26,490
+which will in turn update the document title.
+
+68
+00:03:26,490 --> 00:03:30,960
+So, the website title that we see in a browser tab.
+
+69
+00:03:30,960 --> 00:03:34,800
+So, essentially, effects react to updates
+
+70
+00:03:34,800 --> 00:03:38,490
+to state and props that are used inside the effect,
+
+71
+00:03:38,490 --> 00:03:43,080
+because, again, those are the effects' dependencies.
+
+72
+00:03:43,080 --> 00:03:46,260
+So, in a way, effects are reactive,
+
+73
+00:03:46,260 --> 00:03:49,350
+just like React reacts to state updates
+
+74
+00:03:49,350 --> 00:03:51,780
+by re-rendering the UI.
+
+75
+00:03:51,780 --> 00:03:55,350
+And, this is extremely useful and powerful,
+
+76
+00:03:55,350 --> 00:03:58,470
+as we will see throughout the rest of the course.
+
+77
+00:03:58,470 --> 00:04:02,520
+But, all this only works if we correctly specify
+
+78
+00:04:02,520 --> 00:04:03,963
+the dependency array.
+
+79
+00:04:05,130 --> 00:04:08,940
+Okay, but now let's remember how I said
+
+80
+00:04:08,940 --> 00:04:11,730
+in the very first lecture about effects,
+
+81
+00:04:11,730 --> 00:04:15,660
+that effects are used to keep a component synchronized
+
+82
+00:04:15,660 --> 00:04:17,850
+with some external system.
+
+83
+00:04:17,850 --> 00:04:22,850
+So, some system that lives outside of our React based code.
+
+84
+00:04:23,280 --> 00:04:25,110
+And, if we think about it,
+
+85
+00:04:25,110 --> 00:04:28,200
+that's exactly what is happening here.
+
+86
+00:04:28,200 --> 00:04:31,650
+So, the state and props of our component
+
+87
+00:04:31,650 --> 00:04:36,030
+are now in fact synchronized with an external system,
+
+88
+00:04:36,030 --> 00:04:40,800
+which is, in this case, the title of the document.
+
+89
+00:04:40,800 --> 00:04:43,920
+Now, updating the title in some other way
+
+90
+00:04:43,920 --> 00:04:47,040
+will, of course, not magically update the title
+
+91
+00:04:47,040 --> 00:04:48,840
+or user rating.
+
+92
+00:04:48,840 --> 00:04:52,590
+So, the synchronization only works in one way,
+
+93
+00:04:52,590 --> 00:04:54,630
+but that's not really the point.
+
+94
+00:04:54,630 --> 00:04:57,330
+The same actually happens with state updates
+
+95
+00:04:57,330 --> 00:05:01,650
+and we still say that the UI is in sync with state.
+
+96
+00:05:01,650 --> 00:05:04,590
+So, the point is that use effect
+
+97
+00:05:04,590 --> 00:05:07,650
+truly is a synchronization mechanism,
+
+98
+00:05:07,650 --> 00:05:10,680
+so a mechanism to synchronize effects
+
+99
+00:05:10,680 --> 00:05:13,440
+with the state of the application.
+
+100
+00:05:13,440 --> 00:05:14,910
+And, you will discover this
+
+101
+00:05:14,910 --> 00:05:17,730
+each time that you're going to use an effect.
+
+102
+00:05:17,730 --> 00:05:21,093
+And, so let's go explore this a little bit further.
+
+103
+00:05:22,650 --> 00:05:26,550
+So, as we just learned, whenever a dependency changes,
+
+104
+00:05:26,550 --> 00:05:29,760
+the effect is executed again.
+
+105
+00:05:29,760 --> 00:05:32,640
+But, now, let's remember that dependencies
+
+106
+00:05:32,640 --> 00:05:35,850
+are always state or props.
+
+107
+00:05:35,850 --> 00:05:39,900
+And, what happens to a component each time that its state
+
+108
+00:05:39,900 --> 00:05:42,390
+or props are updated?
+
+109
+00:05:42,390 --> 00:05:43,920
+Well, that's right.
+
+110
+00:05:43,920 --> 00:05:46,740
+The component will re-render.
+
+111
+00:05:46,740 --> 00:05:48,540
+This means that effects
+
+112
+00:05:48,540 --> 00:05:51,270
+and the life cycle of a component instance
+
+113
+00:05:51,270 --> 00:05:53,760
+are deeply interconnected.
+
+114
+00:05:53,760 --> 00:05:57,780
+That's why when the useEffect hook was first introduced,
+
+115
+00:05:57,780 --> 00:06:01,260
+many people thought that it was a life cycle hook
+
+116
+00:06:01,260 --> 00:06:04,140
+rather than a hook for synchronizing the component
+
+117
+00:06:04,140 --> 00:06:05,673
+with a side effect.
+
+118
+00:06:06,540 --> 00:06:09,900
+Now, the conclusion and the big takeaway from this
+
+119
+00:06:09,900 --> 00:06:12,540
+is that we can use the dependency array
+
+120
+00:06:12,540 --> 00:06:14,340
+in order to run effects
+
+121
+00:06:14,340 --> 00:06:18,390
+whenever the component renders or re-renders.
+
+122
+00:06:18,390 --> 00:06:20,970
+So, in a way, the useEffect hook
+
+123
+00:06:20,970 --> 00:06:23,340
+is actually about synchronization
+
+124
+00:06:23,340 --> 00:06:26,013
+and about the component life cycle.
+
+125
+00:06:27,030 --> 00:06:29,520
+Okay, and so with this knowledge,
+
+126
+00:06:29,520 --> 00:06:33,390
+let's look at the three different types of dependency arrays
+
+127
+00:06:33,390 --> 00:06:35,070
+that we can specify
+
+128
+00:06:35,070 --> 00:06:38,850
+and also how they affect both synchronization
+
+129
+00:06:38,850 --> 00:06:40,890
+and life cycle.
+
+130
+00:06:40,890 --> 00:06:43,590
+So, when we have multiple dependencies
+
+131
+00:06:43,590 --> 00:06:47,850
+like in this first example, variables X, Y, and Z,
+
+132
+00:06:47,850 --> 00:06:52,850
+it means that the effect synchronizes with X, Y, and Z.
+
+133
+00:06:52,860 --> 00:06:55,440
+Now, in terms of the life cycle,
+
+134
+00:06:55,440 --> 00:06:59,130
+it means that the effect will run on the initial render
+
+135
+00:06:59,130 --> 00:07:03,150
+and also on each re-render triggered by updating
+
+136
+00:07:03,150 --> 00:07:07,140
+one of the dependencies X, Y, or Z.
+
+137
+00:07:07,140 --> 00:07:10,620
+So, again, just to make this crystal clear,
+
+138
+00:07:10,620 --> 00:07:13,290
+the effect will be executed each time
+
+139
+00:07:13,290 --> 00:07:16,200
+the component instance is being re-rendered
+
+140
+00:07:16,200 --> 00:07:19,680
+by an update to X, Y, or Z.
+
+141
+00:07:19,680 --> 00:07:23,880
+But, if some other piece of state or prop is updated,
+
+142
+00:07:23,880 --> 00:07:28,260
+then this particular effect will not be executed.
+
+143
+00:07:28,260 --> 00:07:31,200
+Now, if we have an empty dependency array,
+
+144
+00:07:31,200 --> 00:07:33,390
+that means that the effect synchronizes
+
+145
+00:07:33,390 --> 00:07:35,550
+with no state or props,
+
+146
+00:07:35,550 --> 00:07:39,270
+and therefore it will only run on mount.
+
+147
+00:07:39,270 --> 00:07:42,930
+In other words, if an effect has no dependencies,
+
+148
+00:07:42,930 --> 00:07:45,600
+it doesn't use any values that are relevant
+
+149
+00:07:45,600 --> 00:07:47,340
+for rendering the component.
+
+150
+00:07:47,340 --> 00:07:52,140
+And, so, therefore, it's safe to be executed only once.
+
+151
+00:07:52,140 --> 00:07:54,960
+Finally, if we have no array at all,
+
+152
+00:07:54,960 --> 00:07:59,160
+we already know that the effect will run on every render,
+
+153
+00:07:59,160 --> 00:08:03,990
+which is usually a really bad idea and not what we want.
+
+154
+00:08:03,990 --> 00:08:06,990
+Now, if the effect runs on every render,
+
+155
+00:08:06,990 --> 00:08:09,180
+that basically means that the effect
+
+156
+00:08:09,180 --> 00:08:12,090
+synchronizes with everything.
+
+157
+00:08:12,090 --> 00:08:16,470
+So, essentially every state and every prop in the component
+
+158
+00:08:16,470 --> 00:08:19,113
+will be dependencies in this case.
+
+159
+00:08:20,520 --> 00:08:21,900
+And, now, to finish,
+
+160
+00:08:21,900 --> 00:08:25,830
+let's look at when exactly effects are executed
+
+161
+00:08:25,830 --> 00:08:29,250
+during the render and commit process.
+
+162
+00:08:29,250 --> 00:08:32,280
+Now, I mentioned in the first lecture on effects
+
+163
+00:08:32,280 --> 00:08:35,520
+that effects are executed after render.
+
+164
+00:08:35,520 --> 00:08:40,520
+And, while that's not wrong, it's also not the full story.
+
+165
+00:08:40,710 --> 00:08:44,880
+So, let's look at a timeline of events that happen
+
+166
+00:08:44,880 --> 00:08:48,090
+as components render and re-render.
+
+167
+00:08:48,090 --> 00:08:50,460
+And, I found this extremely useful
+
+168
+00:08:50,460 --> 00:08:54,270
+when I first learned about the useEffect hook myself.
+
+169
+00:08:54,270 --> 00:08:57,753
+And, so I think that you will benefit from this as well.
+
+170
+00:08:58,740 --> 00:09:00,780
+So, as we already know,
+
+171
+00:09:00,780 --> 00:09:03,420
+the whole process starts with mounting
+
+172
+00:09:03,420 --> 00:09:05,190
+the component instance,
+
+173
+00:09:05,190 --> 00:09:09,390
+in this case an instance of movie details.
+
+174
+00:09:09,390 --> 00:09:12,000
+After that, the result of rendering
+
+175
+00:09:12,000 --> 00:09:13,800
+is committed to the dom,
+
+176
+00:09:13,800 --> 00:09:17,880
+and finally the dom changes are painted onto the screen
+
+177
+00:09:17,880 --> 00:09:19,650
+by the browser.
+
+178
+00:09:19,650 --> 00:09:22,953
+So, this is just what we learned in the previous section,
+
+179
+00:09:23,820 --> 00:09:27,720
+but where do effects come into play here?
+
+180
+00:09:27,720 --> 00:09:31,170
+Well, effects are actually only executed
+
+181
+00:09:31,170 --> 00:09:34,470
+after the browser has painted the component instance
+
+182
+00:09:34,470 --> 00:09:35,850
+on the screen.
+
+183
+00:09:35,850 --> 00:09:38,340
+So, not immediately after render,
+
+184
+00:09:38,340 --> 00:09:40,710
+as you might have thought initially.
+
+185
+00:09:40,710 --> 00:09:44,670
+That's why we say that effects run asynchronously
+
+186
+00:09:44,670 --> 00:09:48,570
+after the render has already been painted to the screen.
+
+187
+00:09:48,570 --> 00:09:51,160
+And, the reasons why effect work this way
+
+188
+00:09:52,098 --> 00:09:55,110
+is that effects may contain long-running processes,
+
+189
+00:09:55,110 --> 00:09:57,270
+such as fetching data.
+
+190
+00:09:57,270 --> 00:09:59,520
+So, in a situation like that,
+
+191
+00:09:59,520 --> 00:10:01,980
+if React would execute the effect
+
+192
+00:10:01,980 --> 00:10:04,560
+before the browser paints a new screen,
+
+193
+00:10:04,560 --> 00:10:06,930
+it would block this entire process,
+
+194
+00:10:06,930 --> 00:10:10,560
+and users would see an old version of the component
+
+195
+00:10:10,560 --> 00:10:12,240
+for way too long.
+
+196
+00:10:12,240 --> 00:10:16,020
+And, of course, that would be very undesirable.
+
+197
+00:10:16,020 --> 00:10:19,050
+Now, one important consequence of the fact
+
+198
+00:10:19,050 --> 00:10:21,780
+that effects do not run during render
+
+199
+00:10:21,780 --> 00:10:24,870
+is that if an effect sets state,
+
+200
+00:10:24,870 --> 00:10:27,210
+then a second additional render
+
+201
+00:10:27,210 --> 00:10:30,750
+will be required to display the UI correctly.
+
+202
+00:10:30,750 --> 00:10:32,670
+And, so this is one of the reasons
+
+203
+00:10:32,670 --> 00:10:35,820
+why you shouldn't overuse effects.
+
+204
+00:10:35,820 --> 00:10:38,070
+Okay, but moving on now,
+
+205
+00:10:38,070 --> 00:10:42,510
+let's say that the title was initially set to Interstellar,
+
+206
+00:10:42,510 --> 00:10:46,260
+but then it changes to Interstellar Wars.
+
+207
+00:10:46,260 --> 00:10:48,870
+And, since this title is a prop,
+
+208
+00:10:48,870 --> 00:10:51,900
+it means that the component will re-render,
+
+209
+00:10:51,900 --> 00:10:54,150
+and the dom changes will be committed
+
+210
+00:10:54,150 --> 00:10:57,180
+and painted to the screen again.
+
+211
+00:10:57,180 --> 00:10:59,250
+Now, since title is part
+
+212
+00:10:59,250 --> 00:11:02,070
+of the dependency array of this effect,
+
+213
+00:11:02,070 --> 00:11:05,640
+the effect will be executed again at this point.
+
+214
+00:11:05,640 --> 00:11:09,030
+So, just as we learned in the last slide.
+
+215
+00:11:09,030 --> 00:11:11,880
+And, this whole process can of course be repeated
+
+216
+00:11:11,880 --> 00:11:13,590
+over and over again
+
+217
+00:11:13,590 --> 00:11:16,110
+until this movie details instance
+
+218
+00:11:16,110 --> 00:11:19,803
+finally unmounts and disappears from the screen.
+
+219
+00:11:21,150 --> 00:11:24,480
+Now, you might notice that there is actually a hole
+
+220
+00:11:24,480 --> 00:11:28,560
+between the commit and browser paint, right?
+
+221
+00:11:28,560 --> 00:11:30,660
+And, the reason is that, in React,
+
+222
+00:11:30,660 --> 00:11:33,540
+there's actually another type of effect
+
+223
+00:11:33,540 --> 00:11:35,883
+called a layout effect.
+
+224
+00:11:36,840 --> 00:11:39,840
+So, the only difference between a regular effect
+
+225
+00:11:39,840 --> 00:11:43,890
+and a layout effect is that the layout effect runs
+
+226
+00:11:43,890 --> 00:11:47,730
+before the browser actually paints the new screen.
+
+227
+00:11:47,730 --> 00:11:49,890
+But, we almost never need this.
+
+228
+00:11:49,890 --> 00:11:52,710
+And, so the React team actually discourages
+
+229
+00:11:52,710 --> 00:11:56,610
+the use of this use layout effect hook.
+
+230
+00:11:56,610 --> 00:11:58,380
+I simply mentioned this here
+
+231
+00:11:58,380 --> 00:12:01,890
+so that you know that this also exists.
+
+232
+00:12:01,890 --> 00:12:05,370
+And, actually, there are even two more holds
+
+233
+00:12:05,370 --> 00:12:06,780
+in this timeline.
+
+234
+00:12:06,780 --> 00:12:09,960
+But, we will talk about these mystery steps
+
+235
+00:12:09,960 --> 00:12:12,000
+by the end of the section.
+
+236
+00:12:12,000 --> 00:12:14,313
+So, stay tuned for that.
+

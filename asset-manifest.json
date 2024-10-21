@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/subtitle-react/static/css/main.cce54a14.css",
+    "main.js": "/subtitle-react/static/js/main.4108420c.js",
+    "static/media/PTSans-Regular.ttf": "/subtitle-react/static/media/PTSans-Regular.77e92507394e2309d837.ttf",
+    "index.html": "/subtitle-react/index.html",
+    "main.cce54a14.css.map": "/subtitle-react/static/css/main.cce54a14.css.map",
+    "main.4108420c.js.map": "/subtitle-react/static/js/main.4108420c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cce54a14.css",
+    "static/js/main.4108420c.js"
+  ]
+}
