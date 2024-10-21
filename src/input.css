@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-blue {
+        @apply flex items-center min-w-fit justify-center text-[12px] md:text-[13px] relative border-2 border-solid border-blue-50 bg-blue-50 rounded-lg px-3 py-2 text-blue-500 cursor-pointer;
+    }
+
+    .btn-gray {
+        @apply flex items-center min-w-fit justify-center text-[12px] md:text-[13px] relative border-2 border-solid border-slate-100 bg-slate-100 rounded-lg px-3 py-2 text-slate-500 cursor-pointer;
+    }
+
+    .btn-red {
+        @apply flex items-center min-w-fit justify-center text-[12px] md:text-[13px] relative border-2 border-solid border-red-50 bg-red-50 rounded-lg px-3 py-2 text-red-500 cursor-pointer;
+    }
+
+    .subtitleFile {
+        @apply flex relative select-none justify-center flex-col items-center w-full p-3 sm:p-4 rounded-xl outline outline-2 transition-all outline-transparent cursor-pointer hover:outline-blue-200 hover:bg-slate-50;
+    }
+}

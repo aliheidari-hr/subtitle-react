@@ -1,0 +1,1016 @@
+1
+00:00:01,140 --> 00:00:04,470
+Let's now leave the topics of rendering and state,
+
+2
+00:00:04,470 --> 00:00:06,900
+and turn towards another essential part
+
+3
+00:00:06,900 --> 00:00:09,330
+of React applications that we haven't
+
+4
+00:00:09,330 --> 00:00:13,020
+really talked about yet, and that's events.
+
+5
+00:00:13,020 --> 00:00:17,130
+So in this lecture, we will learn how React handles events,
+
+6
+00:00:17,130 --> 00:00:19,203
+and how they work behind the scenes,
+
+7
+00:00:20,640 --> 00:00:23,040
+but let's start with a quick refresher
+
+8
+00:00:23,040 --> 00:00:26,340
+on how event propagation and event delegation
+
+9
+00:00:26,340 --> 00:00:28,200
+work in the DOM,
+
+10
+00:00:28,200 --> 00:00:32,220
+because this is important to understand how React works,
+
+11
+00:00:32,220 --> 00:00:35,070
+and also, because I believe that many people
+
+12
+00:00:35,070 --> 00:00:37,830
+don't have a good grasp on how events
+
+13
+00:00:37,830 --> 00:00:40,380
+actually work in the browser.
+
+14
+00:00:40,380 --> 00:00:44,010
+So let's consider this tree of DOM elements,
+
+15
+00:00:44,010 --> 00:00:47,400
+and note that this really is a DOM tree,
+
+16
+00:00:47,400 --> 00:00:51,660
+so not a fiber tree or a React element tree.
+
+17
+00:00:51,660 --> 00:00:54,540
+And now, let's say that some event happens,
+
+18
+00:00:54,540 --> 00:00:57,510
+like a click on one of the three buttons,
+
+19
+00:00:57,510 --> 00:01:00,900
+and so here is what's gonna happen in the browser.
+
+20
+00:01:00,900 --> 00:01:02,850
+As soon as the event fires,
+
+21
+00:01:02,850 --> 00:01:05,610
+a new event object will be created,
+
+22
+00:01:05,610 --> 00:01:08,340
+but it will not be created where the click
+
+23
+00:01:08,340 --> 00:01:09,840
+actually happened.
+
+24
+00:01:09,840 --> 00:01:12,540
+Instead, the object will be created
+
+25
+00:01:12,540 --> 00:01:14,790
+at the root of the document,
+
+26
+00:01:14,790 --> 00:01:17,760
+so at the very top of the tree.
+
+27
+00:01:17,760 --> 00:01:22,020
+From there, the event will then travel down the entire tree
+
+28
+00:01:22,020 --> 00:01:24,780
+during the so-called capturing phase,
+
+29
+00:01:24,780 --> 00:01:28,470
+all the way, until it reaches the target element,
+
+30
+00:01:28,470 --> 00:01:31,200
+and the target element is simply the element
+
+31
+00:01:31,200 --> 00:01:35,070
+on which the event was actually first triggered.
+
+32
+00:01:35,070 --> 00:01:38,790
+So at the target, we can choose to handle the event
+
+33
+00:01:38,790 --> 00:01:42,600
+by placing an event handler function on that element,
+
+34
+00:01:42,600 --> 00:01:45,930
+which usually is exactly what we do.
+
+35
+00:01:45,930 --> 00:01:49,650
+Then immediately after the target element has been reached,
+
+36
+00:01:49,650 --> 00:01:54,420
+the event object travels all the way back up the entire tree
+
+37
+00:01:54,420 --> 00:01:57,390
+during the so-called bubbling phase.
+
+38
+00:01:57,390 --> 00:01:59,700
+Now, there are two very important things
+
+39
+00:01:59,700 --> 00:02:02,250
+to understand about this process.
+
+40
+00:02:02,250 --> 00:02:06,270
+The first is that during the capturing and bubbling phase,
+
+41
+00:02:06,270 --> 00:02:09,900
+the event really goes through every single child
+
+42
+00:02:09,900 --> 00:02:12,720
+and parent element one by one.
+
+43
+00:02:12,720 --> 00:02:15,900
+In fact, it's if the event originated
+
+44
+00:02:15,900 --> 00:02:19,860
+or happened in each of these DOM elements.
+
+45
+00:02:19,860 --> 00:02:23,190
+The second important thing is that by default,
+
+46
+00:02:23,190 --> 00:02:25,350
+event handlers listen to events
+
+47
+00:02:25,350 --> 00:02:27,690
+not only on the target element,
+
+48
+00:02:27,690 --> 00:02:30,990
+but also during the bubbling phase,
+
+49
+00:02:30,990 --> 00:02:33,750
+so if we put these two things together,
+
+50
+00:02:33,750 --> 00:02:37,800
+it means that every single event handler in a parent element
+
+51
+00:02:37,800 --> 00:02:41,340
+will also be executed during the bubbling phase
+
+52
+00:02:41,340 --> 00:02:46,080
+as long as it's also listening for the same type of event.
+
+53
+00:02:46,080 --> 00:02:49,470
+For example, if we edit another click event handler
+
+54
+00:02:49,470 --> 00:02:51,210
+to the header element,
+
+55
+00:02:51,210 --> 00:02:53,460
+then during this whole process,
+
+56
+00:02:53,460 --> 00:02:57,030
+both the handlers at the target and the header element
+
+57
+00:02:57,030 --> 00:03:00,270
+would be executed when the click happens.
+
+58
+00:03:00,270 --> 00:03:03,780
+Now, sometimes we actually don't want this behavior,
+
+59
+00:03:03,780 --> 00:03:06,870
+and so in that case, we can prevent the event
+
+60
+00:03:06,870 --> 00:03:09,840
+from bubbling up any further simply by calling
+
+61
+00:03:09,840 --> 00:03:13,710
+the stopPropagation method on the event object,
+
+62
+00:03:13,710 --> 00:03:18,150
+and this works in vanilla JavaScript, and also in React,
+
+63
+00:03:18,150 --> 00:03:20,910
+but it's actually very rarely necessary,
+
+64
+00:03:20,910 --> 00:03:24,573
+so only use this if there really is no other solution.
+
+65
+00:03:25,770 --> 00:03:30,770
+Okay, so this is essentially how events work in the browser.
+
+66
+00:03:31,350 --> 00:03:34,470
+Now, the fact that events bubble like this
+
+67
+00:03:34,470 --> 00:03:37,680
+allows developers to implement a very common
+
+68
+00:03:37,680 --> 00:03:41,940
+and very useful technique called event delegation.
+
+69
+00:03:41,940 --> 00:03:45,060
+So with event delegation, we can handle events
+
+70
+00:03:45,060 --> 00:03:48,510
+for multiple elements in one central place,
+
+71
+00:03:48,510 --> 00:03:51,690
+which is one of the parent elements.
+
+72
+00:03:51,690 --> 00:03:54,870
+So imagine that instead of three buttons,
+
+73
+00:03:54,870 --> 00:03:57,780
+there would be like, 1,000 buttons.
+
+74
+00:03:57,780 --> 00:04:01,320
+Now, if we wanted to handle events on all of them,
+
+75
+00:04:01,320 --> 00:04:04,620
+each button would have to have its own copy
+
+76
+00:04:04,620 --> 00:04:06,570
+of the event handler function,
+
+77
+00:04:06,570 --> 00:04:08,280
+which could become problematic
+
+78
+00:04:08,280 --> 00:04:11,850
+for the app's performance and memory usage.
+
+79
+00:04:11,850 --> 00:04:15,300
+So instead, by using event delegation,
+
+80
+00:04:15,300 --> 00:04:18,269
+we can simply add just one handler function
+
+81
+00:04:18,269 --> 00:04:22,140
+to the first parent element of these buttons.
+
+82
+00:04:22,140 --> 00:04:25,260
+Then when a click happens on one of the buttons,
+
+83
+00:04:25,260 --> 00:04:29,730
+the event will bubble up to the options div in this example
+
+84
+00:04:29,730 --> 00:04:33,210
+where we can then use the events target property
+
+85
+00:04:33,210 --> 00:04:36,150
+in order to check whether the event originated
+
+86
+00:04:36,150 --> 00:04:39,030
+from one of the buttons or not,
+
+87
+00:04:39,030 --> 00:04:42,150
+and if it did, we can then handle the event
+
+88
+00:04:42,150 --> 00:04:45,510
+in this central event handler function.
+
+89
+00:04:45,510 --> 00:04:47,940
+Now, if you took my JavaScript course,
+
+90
+00:04:47,940 --> 00:04:50,970
+then you will already know how to do this in practice,
+
+91
+00:04:50,970 --> 00:04:54,150
+because in fact, we do this all the time
+
+92
+00:04:54,150 --> 00:04:56,940
+in vanilla JavaScript applications.
+
+93
+00:04:56,940 --> 00:05:00,660
+However, in React apps, it's actually not so common
+
+94
+00:05:00,660 --> 00:05:03,240
+for us to use this technique,
+
+95
+00:05:03,240 --> 00:05:05,280
+but that might leave you wondering,
+
+96
+00:05:05,280 --> 00:05:08,370
+if this is actually not important in React,
+
+97
+00:05:08,370 --> 00:05:11,370
+then why are we even talking about this?
+
+98
+00:05:11,370 --> 00:05:13,920
+Well, for two reasons.
+
+99
+00:05:13,920 --> 00:05:17,880
+First, because sometimes you find some strange behaviors
+
+100
+00:05:17,880 --> 00:05:20,730
+related to events in your applications,
+
+101
+00:05:20,730 --> 00:05:24,630
+which might actually have to do with event bubbling,
+
+102
+00:05:24,630 --> 00:05:27,390
+and so as a good React developer,
+
+103
+00:05:27,390 --> 00:05:30,840
+you always want to understand exactly what's going on
+
+104
+00:05:30,840 --> 00:05:33,930
+in order to fix these problems,
+
+105
+00:05:33,930 --> 00:05:37,500
+and the second reason is that this is actually
+
+106
+00:05:37,500 --> 00:05:41,490
+what React does behind the scenes with our events,
+
+107
+00:05:41,490 --> 00:05:43,443
+and so let's take a look at that.
+
+108
+00:05:44,580 --> 00:05:48,000
+So let's consider this same DOM tree,
+
+109
+00:05:48,000 --> 00:05:50,280
+and let's say again that we want to attach
+
+110
+00:05:50,280 --> 00:05:53,160
+an event handler to one of the buttons,
+
+111
+00:05:53,160 --> 00:05:56,220
+or even to some other DOM element,
+
+112
+00:05:56,220 --> 00:06:00,390
+and this is what that would look like in React code.
+
+113
+00:06:00,390 --> 00:06:03,180
+So we would simply use the onClick prop
+
+114
+00:06:03,180 --> 00:06:07,440
+to listen for click events, and then pass it a function.
+
+115
+00:06:07,440 --> 00:06:10,230
+So that's really easy, right?
+
+116
+00:06:10,230 --> 00:06:12,630
+Now, if we think about how React
+
+117
+00:06:12,630 --> 00:06:16,380
+actually registers these event handlers behind the scenes,
+
+118
+00:06:16,380 --> 00:06:21,060
+we might believe that it would look something like this.
+
+119
+00:06:21,060 --> 00:06:23,880
+So React might select a button,
+
+120
+00:06:23,880 --> 00:06:27,450
+and then add the event handler to that element,
+
+121
+00:06:27,450 --> 00:06:30,720
+so that sounds pretty logical, right?
+
+122
+00:06:30,720 --> 00:06:35,310
+However, this is actually not what React does internally.
+
+123
+00:06:35,310 --> 00:06:39,780
+Instead, what React actually does is to register this
+
+124
+00:06:39,780 --> 00:06:42,390
+and all other event handler functions
+
+125
+00:06:42,390 --> 00:06:44,880
+to the root DOM container,
+
+126
+00:06:44,880 --> 00:06:48,180
+and that root container is simply the DOM element
+
+127
+00:06:48,180 --> 00:06:51,660
+in which the React app is displayed.
+
+128
+00:06:51,660 --> 00:06:55,350
+So if we use the default of Create React App,
+
+129
+00:06:55,350 --> 00:07:00,350
+that's usually the div element with an ID set to route.
+
+130
+00:07:00,390 --> 00:07:03,840
+So again, instead of selecting the button
+
+131
+00:07:03,840 --> 00:07:06,780
+where we actually placed our event handler,
+
+132
+00:07:06,780 --> 00:07:10,410
+we can imagine that React selects the route element,
+
+133
+00:07:10,410 --> 00:07:15,300
+and then adds all our event handlers to that element,
+
+134
+00:07:15,300 --> 00:07:18,390
+and I say imagine, because the way React
+
+135
+00:07:18,390 --> 00:07:21,000
+does all this behind the scenes is actually
+
+136
+00:07:21,000 --> 00:07:23,370
+a lot more complex than this,
+
+137
+00:07:23,370 --> 00:07:26,820
+but that's not really worth diving into here.
+
+138
+00:07:26,820 --> 00:07:28,890
+The only thing that's worth knowing
+
+139
+00:07:28,890 --> 00:07:31,710
+is that React physically registers
+
+140
+00:07:31,710 --> 00:07:35,220
+one event handler function per event type,
+
+141
+00:07:35,220 --> 00:07:38,940
+and it does so at the root note of the fiber tree
+
+142
+00:07:38,940 --> 00:07:40,950
+during the render phase.
+
+143
+00:07:40,950 --> 00:07:45,030
+So if we have multiple onClick handlers in our code,
+
+144
+00:07:45,030 --> 00:07:48,450
+React we'll actually somehow bundle them all together
+
+145
+00:07:48,450 --> 00:07:51,750
+and just add one big onClick handler
+
+146
+00:07:51,750 --> 00:07:54,660
+to the root node of the fiber tree,
+
+147
+00:07:54,660 --> 00:07:57,510
+and so this is yet another important function
+
+148
+00:07:57,510 --> 00:07:58,833
+of the fiber tree,
+
+149
+00:07:59,850 --> 00:08:04,050
+but anyway, what this means is that behind the scenes,
+
+150
+00:08:04,050 --> 00:08:06,960
+React actually performs event delegation
+
+151
+00:08:06,960 --> 00:08:10,410
+for all events in our applications.
+
+152
+00:08:10,410 --> 00:08:13,860
+So we can say that React delegates all events
+
+153
+00:08:13,860 --> 00:08:15,900
+to the root DOM container,
+
+154
+00:08:15,900 --> 00:08:19,440
+because that's where they will actually get handled,
+
+155
+00:08:19,440 --> 00:08:23,430
+not in the place where we thought we registered them,
+
+156
+00:08:23,430 --> 00:08:26,730
+and so this works exactly how we just learned
+
+157
+00:08:26,730 --> 00:08:28,800
+in the previous slide.
+
+158
+00:08:28,800 --> 00:08:32,820
+So again, whenever a click happens on the button,
+
+159
+00:08:32,820 --> 00:08:35,669
+a new event object is fired off,
+
+160
+00:08:35,669 --> 00:08:38,220
+which will then travel down the DOM tree
+
+161
+00:08:38,220 --> 00:08:41,070
+until it reaches the target element.
+
+162
+00:08:41,070 --> 00:08:44,700
+From there, the event will bubble back up.
+
+163
+00:08:44,700 --> 00:08:48,090
+Then as soon as the event reaches the root container
+
+164
+00:08:48,090 --> 00:08:51,180
+where React registered all our handlers,
+
+165
+00:08:51,180 --> 00:08:54,510
+the event will actually finally get handled
+
+166
+00:08:54,510 --> 00:08:57,690
+according to whatever handlers match the event
+
+167
+00:08:57,690 --> 00:08:59,850
+and the target element.
+
+168
+00:08:59,850 --> 00:09:02,910
+And finally, once that's all done,
+
+169
+00:09:02,910 --> 00:09:05,550
+the event, of course, continues bubbling up
+
+170
+00:09:05,550 --> 00:09:08,850
+until it disappears into nowhere,
+
+171
+00:09:08,850 --> 00:09:12,780
+and the beauty of this is that it all happens automatically
+
+172
+00:09:12,780 --> 00:09:15,990
+and invisibly just to make our React apps
+
+173
+00:09:15,990 --> 00:09:18,930
+yet a little bit more performant.
+
+174
+00:09:18,930 --> 00:09:22,380
+Now, just one small detail that I want you to notice
+
+175
+00:09:22,380 --> 00:09:25,560
+is that it's really the DOM tree that matters here,
+
+176
+00:09:25,560 --> 00:09:27,810
+not the component tree.
+
+177
+00:09:27,810 --> 00:09:30,900
+So just because one component is a child
+
+178
+00:09:30,900 --> 00:09:32,490
+of another component,
+
+179
+00:09:32,490 --> 00:09:35,220
+that doesn't mean that the same is true
+
+180
+00:09:35,220 --> 00:09:37,230
+in the displayed DOM tree.
+
+181
+00:09:37,230 --> 00:09:39,390
+So just keep that in mind when thinking
+
+182
+00:09:39,390 --> 00:09:42,213
+about bubbling in React applications.
+
+183
+00:09:44,160 --> 00:09:47,340
+All right, so we talked a lot about events
+
+184
+00:09:47,340 --> 00:09:48,930
+and event objects,
+
+185
+00:09:48,930 --> 00:09:51,690
+and so now, let's finish by taking a look
+
+186
+00:09:51,690 --> 00:09:56,220
+at how these event objects actually work behind the scenes.
+
+187
+00:09:56,220 --> 00:10:00,180
+So whenever we declare an event handler like this one,
+
+188
+00:10:00,180 --> 00:10:03,300
+React gives us access to the event object
+
+189
+00:10:03,300 --> 00:10:07,620
+that was created, just like in vanilla JavaScript.
+
+190
+00:10:07,620 --> 00:10:12,620
+However, in React, this event object is actually different.
+
+191
+00:10:12,990 --> 00:10:16,320
+So in vanilla JavaScript, we simply get access
+
+192
+00:10:16,320 --> 00:10:19,770
+to the native DOM event object, for example,
+
+193
+00:10:19,770 --> 00:10:24,770
+pointer event, mouse event, keyboard event, and many others.
+
+194
+00:10:25,200 --> 00:10:27,780
+React, on the other hand, will give us something
+
+195
+00:10:27,780 --> 00:10:30,180
+called a synthetic event,
+
+196
+00:10:30,180 --> 00:10:32,460
+which is basically a thin wrapper
+
+197
+00:10:32,460 --> 00:10:35,880
+around the DOM'S native event object,
+
+198
+00:10:35,880 --> 00:10:39,390
+and by wrapper we simply mean that synthetic events
+
+199
+00:10:39,390 --> 00:10:42,840
+are pretty similar to native event objects,
+
+200
+00:10:42,840 --> 00:10:46,440
+but they just add or change some functionalities
+
+201
+00:10:46,440 --> 00:10:48,390
+on top of them.
+
+202
+00:10:48,390 --> 00:10:52,260
+So these synthetic events have the same interface
+
+203
+00:10:52,260 --> 00:10:54,300
+as native event objects,
+
+204
+00:10:54,300 --> 00:10:56,820
+and that includes the important methods,
+
+205
+00:10:56,820 --> 00:11:00,360
+stopPropagation, and preventDefault.
+
+206
+00:11:00,360 --> 00:11:03,150
+What's special about synthetic events though,
+
+207
+00:11:03,150 --> 00:11:05,640
+and one of the reasons why the React team
+
+208
+00:11:05,640 --> 00:11:08,310
+decided to implement them is the fact
+
+209
+00:11:08,310 --> 00:11:11,490
+that they fix some browser inconsistencies,
+
+210
+00:11:11,490 --> 00:11:15,090
+making it so that events work in the exact same way
+
+211
+00:11:15,090 --> 00:11:16,890
+in all browsers.
+
+212
+00:11:16,890 --> 00:11:19,620
+The React team also decided that all
+
+213
+00:11:19,620 --> 00:11:23,580
+of the most important synthetic events actually bubble,
+
+214
+00:11:23,580 --> 00:11:27,300
+including the focus, blur, and change events,
+
+215
+00:11:27,300 --> 00:11:30,060
+which usually do not bubble.
+
+216
+00:11:30,060 --> 00:11:32,880
+The only exception here is the scroll event,
+
+217
+00:11:32,880 --> 00:11:35,883
+which does also not bubble in React.
+
+218
+00:11:36,810 --> 00:11:40,440
+Okay, and now to finish, I want to quickly mention
+
+219
+00:11:40,440 --> 00:11:43,830
+some differences between how event handlers work
+
+220
+00:11:43,830 --> 00:11:47,220
+in React and vanilla JavaScript.
+
+221
+00:11:47,220 --> 00:11:50,490
+The first one is that in React, the prop name
+
+222
+00:11:50,490 --> 00:11:54,780
+to attach an event handler are named using camelCase,
+
+223
+00:11:54,780 --> 00:11:58,680
+so something like onClick with an upper case C.
+
+224
+00:11:58,680 --> 00:12:00,690
+In HTML, on the other hand,
+
+225
+00:12:00,690 --> 00:12:03,690
+it would be onclick, all lower case,
+
+226
+00:12:03,690 --> 00:12:07,620
+and if we used an addEventListener in vanilla JavaScript,
+
+227
+00:12:07,620 --> 00:12:10,320
+the event would simply be called click,
+
+228
+00:12:10,320 --> 00:12:13,290
+so without the on prefix.
+
+229
+00:12:13,290 --> 00:12:15,360
+Now, in vanilla JavaScript,
+
+230
+00:12:15,360 --> 00:12:18,180
+whenever we want to stop the default behavior
+
+231
+00:12:18,180 --> 00:12:20,910
+of the browser in response to an event,
+
+232
+00:12:20,910 --> 00:12:24,810
+we can return faults from the event handler function,
+
+233
+00:12:24,810 --> 00:12:27,570
+and the big example of that is the browser
+
+234
+00:12:27,570 --> 00:12:32,040
+automatically reloading the page when we submit a form.
+
+235
+00:12:32,040 --> 00:12:35,400
+However, if we would attempt to return faults
+
+236
+00:12:35,400 --> 00:12:40,080
+in a React event handler, that would simply not work.
+
+237
+00:12:40,080 --> 00:12:44,130
+So in React, the only way to prevent the browser's default
+
+238
+00:12:44,130 --> 00:12:47,100
+behavior is to call preventDefault
+
+239
+00:12:47,100 --> 00:12:50,040
+on the synthetic event object.
+
+240
+00:12:50,040 --> 00:12:52,650
+And finally, in the rare event that you need
+
+241
+00:12:52,650 --> 00:12:55,590
+to handle an event in the capturing phase
+
+242
+00:12:55,590 --> 00:12:57,870
+rather than in the bubbling phase,
+
+243
+00:12:57,870 --> 00:13:01,950
+you can simply attach Capture to the event handler name,
+
+244
+00:13:01,950 --> 00:13:06,480
+for example, onClickCapture instead of just onClick,
+
+245
+00:13:06,480 --> 00:13:09,360
+but most likely, you will never use this,
+
+246
+00:13:09,360 --> 00:13:12,693
+so just keep this somewhere in the back of your mind.
+
+247
+00:13:13,920 --> 00:13:17,670
+All right, so what we just learned in this slide
+
+248
+00:13:17,670 --> 00:13:20,880
+is basically everything that you need to know in practice
+
+249
+00:13:20,880 --> 00:13:25,500
+in order to successfully work with events in React.
+
+250
+00:13:25,500 --> 00:13:29,010
+The rest all happens invisibly behind the scenes,
+
+251
+00:13:29,010 --> 00:13:31,830
+but I hope that you also found the rest
+
+252
+00:13:31,830 --> 00:13:33,330
+of the lecture interesting,
+
+253
+00:13:33,330 --> 00:13:35,880
+and that it gave you even more confidence
+
+254
+00:13:35,880 --> 00:13:38,793
+in working with events in your applications.
+

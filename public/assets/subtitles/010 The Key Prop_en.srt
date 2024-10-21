@@ -1,0 +1,553 @@
+1
+00:00:00,479 --> 00:00:03,480
+Remember how I mentioned the key prop
+
+2
+00:00:03,480 --> 00:00:07,200
+when we talked about how the diffing algorithm works.
+
+3
+00:00:07,200 --> 00:00:09,000
+And so, let's not take some time
+
+4
+00:00:09,000 --> 00:00:11,370
+to look at the key prop in detail
+
+5
+00:00:11,370 --> 00:00:15,453
+in order to learn what it does and when we need to use it.
+
+6
+00:00:17,190 --> 00:00:19,863
+So, the key prop is a special prop
+
+7
+00:00:19,863 --> 00:00:22,740
+that we can use to tell the differing algorithm
+
+8
+00:00:22,740 --> 00:00:25,860
+that a certain element is unique.
+
+9
+00:00:25,860 --> 00:00:30,153
+And this works for both DOM elements and React elements.
+
+10
+00:00:30,990 --> 00:00:33,960
+So in practice, this means that we can give
+
+11
+00:00:33,960 --> 00:00:37,620
+each component instance a unique identification,
+
+12
+00:00:37,620 --> 00:00:40,080
+which will allow React to distinguish
+
+13
+00:00:40,080 --> 00:00:44,700
+between multiple instances of the same component type.
+
+14
+00:00:44,700 --> 00:00:49,650
+Now that's all great, but why do we actually need this?
+
+15
+00:00:49,650 --> 00:00:52,137
+Well, remember that the second assumption
+
+16
+00:00:52,137 --> 00:00:54,180
+of the diffing algorithm
+
+17
+00:00:54,180 --> 00:00:57,656
+is that whenever an element has a stable key,
+
+18
+00:00:57,656 --> 00:01:01,336
+so a key that stays the same across renders,
+
+19
+00:01:01,336 --> 00:01:04,500
+the element will be kept in the DOM,
+
+20
+00:01:04,500 --> 00:01:08,250
+even if the position in the tree has changed.
+
+21
+00:01:08,250 --> 00:01:12,120
+And this is the whole reason why we should use the key prop
+
+22
+00:01:12,120 --> 00:01:15,000
+in lists as we have already done
+
+23
+00:01:15,000 --> 00:01:17,850
+so many times throughout the course.
+
+24
+00:01:17,850 --> 00:01:19,590
+And so, in the next slide,
+
+25
+00:01:19,590 --> 00:01:23,370
+you will finally learn why we need to do that.
+
+26
+00:01:23,370 --> 00:01:25,170
+On the other hand, when the key
+
+27
+00:01:25,170 --> 00:01:28,320
+of a certain element changes between renders,
+
+28
+00:01:28,320 --> 00:01:32,310
+the element will be destroyed and a new one will be created
+
+29
+00:01:32,310 --> 00:01:35,310
+in its place, even if the elements positioned
+
+30
+00:01:35,310 --> 00:01:39,270
+in the tree is exactly the same as before.
+
+31
+00:01:39,270 --> 00:01:41,924
+And so this is great to reset state,
+
+32
+00:01:41,924 --> 00:01:46,560
+which is the second big use case of the key prop.
+
+33
+00:01:46,560 --> 00:01:50,284
+But let's go back to the first big use case of the key prop,
+
+34
+00:01:50,284 --> 00:01:54,420
+which is to use keys in lists.
+
+35
+00:01:54,420 --> 00:01:59,190
+And let's start by considering this example without keys.
+
+36
+00:01:59,190 --> 00:02:02,460
+So here, we have a list with two question items,
+
+37
+00:02:02,460 --> 00:02:05,520
+which clearly have no key prop
+
+38
+00:02:05,520 --> 00:02:08,820
+but let's see what happens when we add a new item
+
+39
+00:02:08,820 --> 00:02:11,520
+to the top of the list.
+
+40
+00:02:11,520 --> 00:02:15,061
+Well, the two list items that we already had are clearly
+
+41
+00:02:15,061 --> 00:02:18,210
+still the same, but they will now appear
+
+42
+00:02:18,210 --> 00:02:22,050
+at different positions in the React Elementary.
+
+43
+00:02:22,050 --> 00:02:24,960
+They're no longer the first and second children
+
+44
+00:02:24,960 --> 00:02:28,383
+but now they are the second and the third children.
+
+45
+00:02:29,250 --> 00:02:32,070
+So, we basically have the same elements
+
+46
+00:02:32,070 --> 00:02:34,800
+but at different positions in the tree.
+
+47
+00:02:34,800 --> 00:02:37,110
+And so according to the differing rules
+
+48
+00:02:37,110 --> 00:02:40,110
+that we learned earlier, these two DOM elements
+
+49
+00:02:40,110 --> 00:02:44,520
+will be removed from the DOM and then immediately recreated
+
+50
+00:02:44,520 --> 00:02:46,530
+at their new positions.
+
+51
+00:02:46,530 --> 00:02:50,970
+And this is obviously bet for performance because removing
+
+52
+00:02:50,970 --> 00:02:55,740
+and rebuilding the same dumb element is just wasted work,
+
+53
+00:02:55,740 --> 00:02:58,800
+right?
+But the thing is that React
+
+54
+00:02:58,800 --> 00:03:01,800
+doesn't know that this is wasted work.
+
+55
+00:03:01,800 --> 00:03:04,920
+Of course, we developers intuitively know
+
+56
+00:03:04,920 --> 00:03:08,670
+that these two elements are actually the same as before
+
+57
+00:03:08,670 --> 00:03:12,240
+but React has no way of knowing that.
+
+58
+00:03:12,240 --> 00:03:15,378
+But what if we could actually change that?
+
+59
+00:03:15,378 --> 00:03:20,147
+Well, that's where keys come into play because remember,
+
+60
+00:03:20,147 --> 00:03:25,147
+a key allows us developers to uniquely identify an element
+
+61
+00:03:25,860 --> 00:03:28,620
+so we can give React that information
+
+62
+00:03:28,620 --> 00:03:31,230
+that it doesn't have on its own.
+
+63
+00:03:31,230 --> 00:03:35,790
+And so now when we add a new item to the top of the list,
+
+64
+00:03:35,790 --> 00:03:38,400
+the two original elements are of course,
+
+65
+00:03:38,400 --> 00:03:40,980
+still in different positions of the tree
+
+66
+00:03:40,980 --> 00:03:43,560
+but they do have a stable key.
+
+67
+00:03:43,560 --> 00:03:47,280
+So, a key that stays the same across renders.
+
+68
+00:03:47,280 --> 00:03:51,180
+So that's q1 and q2 in this case.
+
+69
+00:03:51,180 --> 00:03:53,670
+And so according to the differing rules,
+
+70
+00:03:53,670 --> 00:03:57,180
+these two elements will now be kept in the dump
+
+71
+00:03:57,180 --> 00:04:00,930
+even though their position in the tree is different.
+
+72
+00:04:00,930 --> 00:04:03,360
+So, they will not be destroyed.
+
+73
+00:04:03,360 --> 00:04:07,950
+Entry result will be a bit more of a performant UI.
+
+74
+00:04:07,950 --> 00:04:10,830
+Now of course, you won't really notice this difference
+
+75
+00:04:10,830 --> 00:04:14,250
+on small lists, but it will make a huge difference
+
+76
+00:04:14,250 --> 00:04:18,089
+when you have a really big list with thousands of elements,
+
+77
+00:04:18,089 --> 00:04:21,990
+which can actually happen in some applications.
+
+78
+00:04:21,990 --> 00:04:25,110
+So in summary, always use the key prop
+
+79
+00:04:25,110 --> 00:04:28,830
+when you have multiple child elements of the same type.
+
+80
+00:04:28,830 --> 00:04:32,580
+So just like the question elements in this example
+
+81
+00:04:32,580 --> 00:04:36,390
+and you already knew that you should do that because well,
+
+82
+00:04:36,390 --> 00:04:40,200
+otherwise, React will complain and give us a warning
+
+83
+00:04:40,200 --> 00:04:42,900
+but now, you hopefully understand exactly
+
+84
+00:04:42,900 --> 00:04:44,793
+why you need to do it.
+
+85
+00:04:45,949 --> 00:04:50,949
+Alright, so we looked at the use case for a stable key.
+
+86
+00:04:51,120 --> 00:04:54,840
+And so now let's look at the use case for a changing key,
+
+87
+00:04:54,840 --> 00:04:59,460
+which is used to reset state in component instances.
+
+88
+00:04:59,460 --> 00:05:02,160
+Now here, we don't need a big code example
+
+89
+00:05:02,160 --> 00:05:05,520
+because we will do this in practice in the next lecture.
+
+90
+00:05:05,520 --> 00:05:09,243
+But let me just show you what I mean by resetting state.
+
+91
+00:05:10,260 --> 00:05:14,400
+So, let's say we have this question, inside question box
+
+92
+00:05:14,400 --> 00:05:18,180
+and we pass in this object as a prop.
+
+93
+00:05:18,180 --> 00:05:22,200
+Now the question component instance has an answer state,
+
+94
+00:05:22,200 --> 00:05:25,740
+which right now is set to React allows us
+
+95
+00:05:25,740 --> 00:05:27,720
+to build apps faster.
+
+96
+00:05:27,720 --> 00:05:30,750
+But now, let's imagine that the question changes
+
+97
+00:05:30,750 --> 00:05:32,193
+to this one.
+
+98
+00:05:33,060 --> 00:05:36,630
+So, we still have the same element at the same position
+
+99
+00:05:36,630 --> 00:05:37,740
+in the tree.
+
+100
+00:05:37,740 --> 00:05:40,920
+All that changed was the question prop.
+
+101
+00:05:40,920 --> 00:05:45,390
+So, what do you think will happen to the state in this case?
+
+102
+00:05:45,390 --> 00:05:49,620
+Well, let's remember one of the diffing rules, which says
+
+103
+00:05:49,620 --> 00:05:52,920
+that if we have the same element at the same position
+
+104
+00:05:52,920 --> 00:05:57,920
+in the tree, the DOM element and its state will be kept.
+
+105
+00:05:58,170 --> 00:06:02,310
+Therefore, what's gonna happen is that the state of question
+
+106
+00:06:02,310 --> 00:06:03,780
+will be preserved.
+
+107
+00:06:03,780 --> 00:06:05,970
+So, it will still show the answer
+
+108
+00:06:05,970 --> 00:06:09,120
+that was in the component state before.
+
+109
+00:06:09,120 --> 00:06:10,410
+But that answer is
+
+110
+00:06:10,410 --> 00:06:15,270
+of course completely irrelevant to this new question, right?
+
+111
+00:06:15,270 --> 00:06:18,480
+So, it doesn't make any sense to keep this state
+
+112
+00:06:18,480 --> 00:06:19,503
+around here.
+
+113
+00:06:20,460 --> 00:06:25,320
+So basically, what we need is a way to reset this state.
+
+114
+00:06:25,320 --> 00:06:26,970
+And as you can guess,
+
+115
+00:06:26,970 --> 00:06:31,620
+this is where the key prop comes into play once again.
+
+116
+00:06:31,620 --> 00:06:34,860
+So now, we have a key of q23
+
+117
+00:06:34,860 --> 00:06:37,470
+in this first question, which allows React
+
+118
+00:06:37,470 --> 00:06:41,158
+to uniquely identify this component instance.
+
+119
+00:06:41,158 --> 00:06:43,860
+Then when a new question appears,
+
+120
+00:06:43,860 --> 00:06:46,320
+we can give it a different key.
+
+121
+00:06:46,320 --> 00:06:48,930
+And so by doing this, we tell React
+
+122
+00:06:48,930 --> 00:06:51,526
+that this should be a different component instance
+
+123
+00:06:51,526 --> 00:06:56,070
+and therefore, it should create a brand new DOM element.
+
+124
+00:06:56,070 --> 00:06:58,290
+And the result of doing this
+
+125
+00:06:58,290 --> 00:07:00,499
+is that the state will be reset,
+
+126
+00:07:00,499 --> 00:07:03,740
+which is exactly what we need in the situation
+
+127
+00:07:03,740 --> 00:07:08,370
+in order to make this small app work in a logical way.
+
+128
+00:07:08,370 --> 00:07:10,200
+So, whenever you find yourself
+
+129
+00:07:10,200 --> 00:07:12,864
+in a position where you need to reset state,
+
+130
+00:07:12,864 --> 00:07:16,020
+just make sure that you give the element a key
+
+131
+00:07:16,020 --> 00:07:19,745
+and that the key changes across renderers.
+
+132
+00:07:19,745 --> 00:07:23,760
+Now, this actually is necessary very often
+
+133
+00:07:23,760 --> 00:07:27,180
+but you will sometimes find yourself in this situation.
+
+134
+00:07:27,180 --> 00:07:28,860
+And so when this happens,
+
+135
+00:07:28,860 --> 00:07:33,090
+it's very important to know that this is the solution.
+
+136
+00:07:33,090 --> 00:07:33,923
+Okay.
+
+137
+00:07:33,923 --> 00:07:36,300
+And to make this even more clear now,
+
+138
+00:07:36,300 --> 00:07:38,853
+let's go back to our small project.
+
